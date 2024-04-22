@@ -4,14 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script>
+        function getVote(vote) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "/poll_vote?vote=" + vote, true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    alert(xhr.responseText);
+                    getPollResults();
+                } else {
+                    alert('Error recording vote: ' + xhr.statusText);
+                }
+            };
+            xhr.send();
+        }
+        function getPollResults() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "/poll_result", true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    const pollResults = JSON.parse(xhr.responseText);
+                    document.getElementById("yesVotes").innerText = pollResults.yes;
+                    document.getElementById("noVotes").innerText = pollResults.no;
+                } else {
+                    alert('Error fetching poll results: ' + xhr.statusText);
+                }
+            };
+            xhr.send();
+        }
+        getPollResults();
+    </script>
 </head>
 <body>
     <div id="poll">
         <h3>Do you like PHP and AJAX so far?</h3>
         <form>
-        Yes: <input type="radio" name="vote" value="0" onclick="getVote(this.value)"><br>
-        No: <input type="radio" name="vote" value="1" onclick="getVote(this.value)">
+            Yes: <input type="radio" name="vote" value="0" onclick="getVote(this.value)"><br>
+            No: <input type="radio" name="vote" value="1" onclick="getVote(this.value)">
         </form>
+        <div>
+            <p>Yes Votes: <span id="yesVotes">0</span></p>
+            <p>No Votes: <span id="noVotes">0</span></p>
         </div>
 </body>
 </html>
